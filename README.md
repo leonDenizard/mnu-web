@@ -16,6 +16,11 @@ Frontend do MNU, separado do backend `mnu-server` e executado inicialmente em `h
 - `src/components/ui`: componentes base do Shadcn.
 - `src/lib`: configuração e infraestrutura compartilhada.
 
+## Documentação do frontend
+
+- [Sistema de design](./docs/design-system.md): tokens, uso dos componentes e critérios visuais.
+- [Contrato de integração](./docs/backend-integration.md): regras do domínio que a interface deve preservar ao consumir a API.
+
 Componentes visuais não fazem chamadas HTTP nem concentram regras de negócio. As telas consomem view-models; estes coordenam formulários, mutations e navegação.
 
 ## Fluxo inicial de onboarding

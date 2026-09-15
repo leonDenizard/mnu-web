@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const handoffExchangeResponseSchema = z.object({
+export const authSessionSchema = z.object({
   success: z.literal(true),
   data: z.object({
     accessToken: z.string(),
@@ -13,4 +13,12 @@ export const handoffExchangeResponseSchema = z.object({
   })
 })
 
-export type AuthSession = z.infer<typeof handoffExchangeResponseSchema>['data']
+export const handoffExchangeResponseSchema = authSessionSchema
+
+export const loginFormSchema = z.object({
+  email: z.string().trim().email('Informe um e-mail válido.'),
+  password: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.')
+})
+
+export type AuthSession = z.infer<typeof authSessionSchema>['data']
+export type LoginFormData = z.infer<typeof loginFormSchema>

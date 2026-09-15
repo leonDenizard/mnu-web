@@ -15,10 +15,9 @@ export function useOnboardingCompletionViewModel(code: string | null) {
   const hasStartedExchange = useRef(false)
 
   useEffect(() => {
-    if (hasStartedExchange.current) return
+    if (!code || hasStartedExchange.current) return
     hasStartedExchange.current = true
 
-    if (!code) { setError('Código de onboarding ausente.'); return }
     void exchangeOnboardingCode(code).then((result) => {
       setSession(result.data)
       router.replace('/dashboard')
@@ -27,5 +26,5 @@ export function useOnboardingCompletionViewModel(code: string | null) {
     })
   }, [code, router, setSession])
 
-  return { error }
+  return { error: code ? error : 'Código de onboarding ausente.' }
 }
