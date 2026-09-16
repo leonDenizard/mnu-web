@@ -53,7 +53,7 @@ inverter as cores.
 - A escala padrão do Tailwind é a escala de espaçamento do produto; evite valores
   arbitrários quando um passo da escala resolve.
 - O raio-base é `0.625rem`. Cards usam `rounded-xl`; controles usam `rounded-lg`.
-- Geist é a fonte de interface. Use pesos e tamanhos para criar hierarquia antes
+- Montserrat é a fonte de interface. Use pesos e tamanhos para criar hierarquia antes
   de recorrer a cor. Texto auxiliar deve usar `text-muted-foreground`.
 - Em telas operacionais, dê preferência a títulos curtos, metadados legíveis e
   áreas de toque generosas. Informação de tempo, status e próximo passo deve ser
