@@ -20,5 +20,8 @@ export const loginFormSchema = z.object({
   password: z.string().min(6, 'A senha precisa ter pelo menos 6 caracteres.')
 })
 
-export type AuthSession = z.infer<typeof authSessionSchema>['data']
+export type AuthSession = z.infer<typeof authSessionSchema>['data'] & {
+  expiresAt: number
+}
+export type AuthSessionPayload = z.infer<typeof authSessionSchema>['data']
 export type LoginFormData = z.infer<typeof loginFormSchema>

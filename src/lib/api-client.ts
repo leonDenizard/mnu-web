@@ -23,12 +23,17 @@ export async function apiRequest<T>(
   schema: z.ZodType<T>,
   init?: RequestInit
 ): Promise<T> {
+  const headers = new Headers(init?.headers)
+
+  // Let the browser create the multipart boundary for FormData uploads.
+  // The APIs that send JSON pass it as a serialized string.
+  if (typeof init?.body === 'string' && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
   const response = await fetch(`${env.apiUrl}${path}`, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers
-    }
+    headers
   })
   const body: unknown = await response.json()
 
