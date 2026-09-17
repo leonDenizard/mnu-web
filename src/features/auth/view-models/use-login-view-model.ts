@@ -23,7 +23,7 @@ export function useLoginViewModel() {
     try {
       const result = await mutation.mutateAsync(data)
       setSession(result.data)
-      router.replace('/dashboard')
+      router.replace('/kanban')
     } catch (error) {
       form.setError('root', {
         message: error instanceof ApiError && error.code === 'UNAUTHORIZED'

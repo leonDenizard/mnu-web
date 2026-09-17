@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { isSessionExpired, useAuthSessionStore } from '@/features/auth/store/auth-session.store'
-import { MenuManagementView } from '@/features/menu-imports/views/menu-management-view'
 
-export default function DashboardPage() {
+import { DashboardNavigation } from '../components/dashboard-navigation'
+
+export function DashboardShell({ children }: { children: ReactNode }) {
   const session = useAuthSessionStore((state) => state.session)
   const hasHydrated = useAuthSessionStore((state) => state.hasHydrated)
   const clearSession = useAuthSessionStore((state) => state.clearSession)
@@ -22,5 +23,5 @@ export default function DashboardPage() {
 
   if (!hasHydrated || !session || isSessionExpired(session)) return null
 
-  return <MenuManagementView />
+  return <div className="min-h-screen bg-background"><DashboardNavigation /><div className="md:pl-64">{children}</div></div>
 }

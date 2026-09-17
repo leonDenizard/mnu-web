@@ -20,7 +20,7 @@ export function useOnboardingCompletionViewModel(code: string | null) {
 
     void exchangeOnboardingCode(code).then((result) => {
       setSession(result.data)
-      router.replace('/dashboard')
+      router.replace('/kanban')
     }).catch((reason: unknown) => {
       setError(reason instanceof ApiError ? reason.message : 'Não foi possível concluir seu acesso.')
     })
