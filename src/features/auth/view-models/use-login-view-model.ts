@@ -16,24 +16,26 @@ export function useLoginViewModel() {
   const mutation = useLogin()
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
-    defaultValues: { email: '', password: '' }
+    defaultValues: { email: '', password: '' },
   })
 
-  const submit = form.handleSubmit(async (data) => {
-    try {
-      const result = await mutation.mutateAsync(data)
-      setSession(result.data)
-      router.replace('/kanban')
-    } catch (error) {
-      form.setError('root', {
-        message: error instanceof ApiError && error.code === 'UNAUTHORIZED'
-          ? 'E-mail ou senha inválidos.'
-          : error instanceof ApiError
-            ? error.message
-            : 'Não foi possível entrar. Tente novamente.'
-      })
-    }
-  })
+  const submit = (rememberSession: boolean) =>
+    form.handleSubmit(async (data) => {
+      try {
+        const result = await mutation.mutateAsync(data)
+        setSession(result.data, rememberSession)
+        router.replace('/kanban')
+      } catch (error) {
+        form.setError('root', {
+          message:
+            error instanceof ApiError && error.code === 'UNAUTHORIZED'
+              ? 'E-mail ou senha inválidos.'
+              : error instanceof ApiError
+                ? error.message
+                : 'Não foi possível entrar. Tente novamente.',
+        })
+      }
+    })
 
   return { form, isSubmitting: mutation.isPending, submit }
 }

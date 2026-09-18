@@ -14,7 +14,7 @@ export function useOnboardingViewModel() {
   const mutation = useCreateWebOnboarding()
   const form = useForm<OnboardingFormData>({
     resolver: zodResolver(onboardingFormSchema),
-    defaultValues: { documentType: 'CPF', legalName: '' }
+    defaultValues: { documentType: 'CPF', legalName: '' },
   })
 
   const submit = form.handleSubmit(async (data) => {
@@ -23,7 +23,7 @@ export function useOnboardingViewModel() {
       router.push(`/onboarding/complete?code=${encodeURIComponent(result.data.handoffCode)}`)
     } catch (error) {
       form.setError('root', {
-        message: error instanceof ApiError ? error.message : 'Não foi possível criar sua loja.'
+        message: error instanceof ApiError ? error.message : 'Não foi possível criar sua loja.',
       })
     }
   })

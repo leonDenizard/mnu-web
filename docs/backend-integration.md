@@ -64,6 +64,9 @@ antigos são descartados usando a `version` do pedido.
   reduz esses dados, e o frontend não deve tentar reconstruí-los.
 - Não coloque JWT, token de acesso do pedido ou `shortId` em logs, analytics ou
   mensagens de erro. O código temporário de onboarding deve continuar fora da URL.
+- O navegador pode preencher credenciais via `autocomplete`, mas o frontend nunca
+  armazena a senha. A opção de manter conexão guarda apenas o token até sua
+  expiração; sem essa opção, ele fica limitado à sessão da aba.
 
 ## Estrutura de frontend
 

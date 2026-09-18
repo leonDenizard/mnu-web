@@ -7,6 +7,6 @@ export async function createWebOnboarding(data: OnboardingFormData) {
   void confirmPassword
   return apiRequest('/api/onboarding/web', onboardingApiResponseSchema, {
     method: 'POST',
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
 }

@@ -23,5 +23,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   if (!hasHydrated || !session || isSessionExpired(session)) return null
 
-  return <div className="min-h-screen bg-background"><DashboardNavigation /><div className="md:pl-64">{children}</div></div>
+  return (
+    <div className="min-h-screen bg-background">
+      <DashboardNavigation />
+      <div className="md:pl-64">{children}</div>
+    </div>
+  )
 }

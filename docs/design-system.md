@@ -19,7 +19,7 @@ nunca valores hexadecimais soltos.
 
 | Papel | Token | Valor atual |
 | --- | --- | --- |
-| Fundo da aplicação | `background` | `#faf9f9` |
+| Fundo da aplicação | `background` | `#ffffff` |
 | Borda padrão | `border` | `#e7e5e4` |
 | Ação principal | `primary` | `#7c3aed` |
 | Hover da ação principal | `primary-hover` | `#6d28d9` |
@@ -27,6 +27,10 @@ nunca valores hexadecimais soltos.
 | Superfície elevada | `card` | `#ffffff` |
 | Texto secundário | `muted-foreground` | `#78716c` |
 | Erro/destrutivo | `destructive` | `#dc2626` |
+
+As superfícies-base (`background`, `card`, `popover`, `secondary`, `muted` e
+`accent`) permanecem brancas nesta fase. Bordas e texto secundário fazem a
+separação visual; o roxo é reservado para ações, seleção e foco.
 
 O tema escuro não faz parte do escopo atual. Quando entrar no produto, os tokens
 devem ser revisados por contraste e por cada estado operacional; não basta

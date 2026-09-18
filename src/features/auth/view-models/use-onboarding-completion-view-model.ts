@@ -18,12 +18,16 @@ export function useOnboardingCompletionViewModel(code: string | null) {
     if (!code || hasStartedExchange.current) return
     hasStartedExchange.current = true
 
-    void exchangeOnboardingCode(code).then((result) => {
-      setSession(result.data)
-      router.replace('/kanban')
-    }).catch((reason: unknown) => {
-      setError(reason instanceof ApiError ? reason.message : 'Não foi possível concluir seu acesso.')
-    })
+    void exchangeOnboardingCode(code)
+      .then((result) => {
+        setSession(result.data)
+        router.replace('/kanban')
+      })
+      .catch((reason: unknown) => {
+        setError(
+          reason instanceof ApiError ? reason.message : 'Não foi possível concluir seu acesso.',
+        )
+      })
   }, [code, router, setSession])
 
   return { error: code ? error : 'Código de onboarding ausente.' }

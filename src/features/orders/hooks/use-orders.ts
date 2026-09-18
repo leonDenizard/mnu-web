@@ -12,6 +12,6 @@ export function useOrders() {
     queryKey: ['orders'],
     queryFn: () => listOrders(accessToken!),
     enabled: Boolean(accessToken),
-    refetchInterval: 30_000
+    refetchInterval: 30_000,
   })
 }

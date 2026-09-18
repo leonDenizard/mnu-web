@@ -7,12 +7,16 @@ const errorSchema = z.object({
   error: z.object({
     code: z.string(),
     message: z.string(),
-    details: z.unknown().optional()
-  })
+    details: z.unknown().optional(),
+  }),
 })
 
 export class ApiError extends Error {
-  constructor(readonly code: string, message: string, readonly details?: unknown) {
+  constructor(
+    readonly code: string,
+    message: string,
+    readonly details?: unknown,
+  ) {
     super(message)
     this.name = 'ApiError'
   }
@@ -21,7 +25,7 @@ export class ApiError extends Error {
 export async function apiRequest<T>(
   path: string,
   schema: z.ZodType<T>,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<T> {
   const headers = new Headers(init?.headers)
 
@@ -33,13 +37,14 @@ export async function apiRequest<T>(
 
   const response = await fetch(`${env.apiUrl}${path}`, {
     ...init,
-    headers
+    headers,
   })
   const body: unknown = await response.json()
 
   if (!response.ok) {
     const error = errorSchema.safeParse(body)
-    if (error.success) throw new ApiError(error.data.error.code, error.data.error.message, error.data.error.details)
+    if (error.success)
+      throw new ApiError(error.data.error.code, error.data.error.message, error.data.error.details)
     throw new ApiError('HTTP_ERROR', 'Não foi possível concluir a solicitação.')
   }
 
