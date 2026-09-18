@@ -1,5 +1,5 @@
-import { MenuManagementView } from '@/features/menu-imports/views/menu-management-view'
+import { redirect } from 'next/navigation'
 
 export default function MenuManagementPage() {
-  return <MenuManagementView />
+  redirect('/cardapio/configuracoes')
 }

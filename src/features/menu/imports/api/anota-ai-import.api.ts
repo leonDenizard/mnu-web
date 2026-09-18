@@ -9,6 +9,6 @@ export function importAnotaAiMenu(file: File, accessToken: string) {
   return apiRequest('/api/menu/imports/anota-ai', anotaAiImportResponseSchema, {
     method: 'POST',
     body: formData,
-    headers: { Authorization: `Bearer ${accessToken}` }
+    headers: { Authorization: `Bearer ${accessToken}` },
   })
 }

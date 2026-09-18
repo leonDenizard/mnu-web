@@ -12,7 +12,8 @@ import type { AnotaAiImportResult } from '../schemas/anota-ai-import.schema'
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 function validateFile(file: File) {
-  if (!file.name.toLowerCase().endsWith('.xlsx')) return 'Selecione um arquivo .xlsx exportado pela Anota AI.'
+  if (!file.name.toLowerCase().endsWith('.xlsx'))
+    return 'Selecione um arquivo .xlsx exportado pela Anota AI.'
   if (file.size > MAX_FILE_SIZE) return 'O arquivo deve ter no máximo 5 MB.'
   return null
 }
@@ -64,7 +65,11 @@ export function useMenuImportViewModel() {
       setFile(null)
       if (inputRef.current) inputRef.current.value = ''
     } catch (reason) {
-      setError(reason instanceof ApiError ? reason.message : 'Não foi possível importar o cardápio. Tente novamente.')
+      setError(
+        reason instanceof ApiError
+          ? reason.message
+          : 'Não foi possível importar o cardápio. Tente novamente.',
+      )
     }
   }
 
@@ -75,6 +80,6 @@ export function useMenuImportViewModel() {
     inputRef,
     isImporting: mutation.isPending,
     chooseFile,
-    submit
+    submit,
   }
 }

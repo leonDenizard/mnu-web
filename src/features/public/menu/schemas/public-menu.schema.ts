@@ -7,7 +7,7 @@ const publicMenuOptionSchema = z.object({
   image: z.string().nullable(),
   price: z.number(),
   maxQuantity: z.number().nullable(),
-  displayOrder: z.number()
+  displayOrder: z.number(),
 })
 
 const publicMenuModifierGroupSchema = z.object({
@@ -17,7 +17,7 @@ const publicMenuModifierGroupSchema = z.object({
   minSelections: z.number(),
   maxSelections: z.number(),
   displayOrder: z.number(),
-  options: z.array(publicMenuOptionSchema)
+  options: z.array(publicMenuOptionSchema),
 })
 
 const publicMenuProductSchema = z.object({
@@ -28,7 +28,7 @@ const publicMenuProductSchema = z.object({
   image: z.string().nullable(),
   promotionalPrice: z.number().nullable(),
   displayOrder: z.number().nullable(),
-  modifierGroups: z.array(publicMenuModifierGroupSchema)
+  modifierGroups: z.array(publicMenuModifierGroupSchema),
 })
 
 export const publicMenuResponseSchema = z.object({
@@ -45,13 +45,15 @@ export const publicMenuResponseSchema = z.object({
     supportsPickup: z.boolean(),
     supportsDineIn: z.boolean(),
     deliveryFeeCents: z.number().nullable(),
-    categories: z.array(z.object({
-      id: z.string(),
-      title: z.string(),
-      displayOrder: z.number(),
-      products: z.array(publicMenuProductSchema)
-    }))
-  })
+    categories: z.array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        displayOrder: z.number(),
+        products: z.array(publicMenuProductSchema),
+      }),
+    ),
+  }),
 })
 
 export type PublicMenu = z.infer<typeof publicMenuResponseSchema>['data']

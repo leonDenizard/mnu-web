@@ -7,8 +7,8 @@ export const anotaAiImportResponseSchema = z.object({
     products: z.number().int().nonnegative(),
     modifierGroups: z.number().int().nonnegative(),
     modifierOptions: z.number().int().nonnegative(),
-    productModifierGroups: z.number().int().nonnegative()
-  })
+    productModifierGroups: z.number().int().nonnegative(),
+  }),
 })
 
 export type AnotaAiImportResult = z.infer<typeof anotaAiImportResponseSchema>['data']

@@ -4,7 +4,7 @@ import { publicMenuResponseSchema, type PublicMenu } from '../schemas/public-men
 
 export async function getPublicMenu(slug: string): Promise<PublicMenu | null> {
   const response = await fetch(`${env.apiUrl}/api/public/menu/${encodeURIComponent(slug)}`, {
-    cache: 'no-store'
+    cache: 'no-store',
   })
 
   if (response.status === 404) return null
