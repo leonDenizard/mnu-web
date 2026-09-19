@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
-import { DashboardShell } from '@/features/dashboard/views/dashboard-shell'
+import { AuthenticatedShell } from '@/components/layout/authenticated-shell'
 
 export default function AuthenticatedLayout({ children }: { children: ReactNode }) {
-  return <DashboardShell>{children}</DashboardShell>
+  return <AuthenticatedShell>{children}</AuthenticatedShell>
 }

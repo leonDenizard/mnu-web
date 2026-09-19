@@ -70,7 +70,7 @@ antigos são descartados usando a `version` do pedido.
 
 ## Estrutura de frontend
 
-`src/app` compõe rotas e providers. Cada domínio em `src/features` separa `api`,
+`src/app` compõe rotas e providers. Cada domínio em `src/modules` separa `api`,
 schemas, hooks, view-models e views. Views não fazem HTTP nem concentram regra de
 negócio: elas consomem o view-model. Esta separação é obrigatória para manter o
 fluxo do backend explícito e testável.

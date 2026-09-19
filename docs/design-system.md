@@ -40,7 +40,7 @@ inverter as cores.
 
 - Use `src/components/ui` para primitivas de interação: botão, campo, label,
   card e futuros primitives do Shadcn/Base UI.
-- Crie componentes em `src/features/<domínio>/components` quando o padrão tiver
+- Crie componentes em `src/modules/<domínio>/components` quando o padrão tiver
   linguagem e comportamento próprios do MNU. Não os coloque em `ui` apenas por
   serem reutilizáveis.
 - Uma ação primária por contexto é a regra. Use `primary` para a ação que move o

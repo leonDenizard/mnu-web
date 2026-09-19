@@ -3,11 +3,11 @@
 import { useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { isSessionExpired, useAuthSessionStore } from '@/features/auth/store/auth-session.store'
+import { isSessionExpired, useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
 
-import { DashboardNavigation } from '../components/dashboard-navigation'
+import { AppNavigation } from './app-navigation'
 
-export function DashboardShell({ children }: { children: ReactNode }) {
+export function AuthenticatedShell({ children }: { children: ReactNode }) {
   const session = useAuthSessionStore((state) => state.session)
   const hasHydrated = useAuthSessionStore((state) => state.hasHydrated)
   const clearSession = useAuthSessionStore((state) => state.clearSession)
@@ -25,7 +25,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNavigation />
+      <AppNavigation />
       <div className="md:pl-64">{children}</div>
     </div>
   )

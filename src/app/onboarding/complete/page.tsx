@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { OnboardingCompletionView } from '@/features/auth/views/onboarding-completion-view'
+import { OnboardingCompletionView } from '@/modules/auth/views/onboarding-completion-view'
 
 export default function OnboardingCompletionPage() {
   return (

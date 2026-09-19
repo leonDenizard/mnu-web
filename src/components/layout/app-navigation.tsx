@@ -7,7 +7,7 @@ import { usePathname, useRouter } from 'next/navigation'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useAuthSessionStore } from '@/features/auth/store/auth-session.store'
+import { useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
 
 const navigation = [
   { href: '/kanban', label: 'Pedidos', icon: ClipboardList },
@@ -15,12 +15,11 @@ const navigation = [
 ]
 
 const menuNavigation = [
-  { href: '/cardapio/configuracoes', label: 'Configurações do cardápio', icon: Settings2 },
-  { href: '/cardapio/produtos', label: 'Gerenciador de produtos', icon: UtensilsCrossed },
+  { href: '/cardapio/configuracoes', label: 'Gerenciar cardápio', icon: Settings2 },
   { href: '/cardapio/importacoes', label: 'Importar cardápio', icon: FileSpreadsheet },
 ]
 
-export function DashboardNavigation() {
+export function AppNavigation() {
   const pathname = usePathname()
   const router = useRouter()
   const session = useAuthSessionStore((state) => state.session)

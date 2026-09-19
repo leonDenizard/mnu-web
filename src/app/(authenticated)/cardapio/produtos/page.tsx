@@ -1,5 +1,5 @@
-import { ProductManagementView } from '@/features/menu/products/views/product-management-view'
+import { redirect } from 'next/navigation'
 
 export default function ProductManagementPage() {
-  return <ProductManagementView />
+  redirect('/cardapio/configuracoes')
 }

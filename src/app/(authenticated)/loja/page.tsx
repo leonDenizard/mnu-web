@@ -1,4 +1,4 @@
-import { StoreView } from '@/features/store/views/store-view'
+import { StoreView } from '@/modules/store/views/store-view'
 
 export default function StorePage() {
   return <StoreView />

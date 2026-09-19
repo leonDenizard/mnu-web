@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 
 import { ApiError } from '@/lib/api-client'
 
-import { useAuthSessionStore } from '@/features/auth/store/auth-session.store'
+import { useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
 
 import { useImportAnotaAiMenu } from '../hooks/use-import-anota-ai-menu'
 import type { AnotaAiImportResult } from '../schemas/anota-ai-import.schema'

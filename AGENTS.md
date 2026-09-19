@@ -10,11 +10,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Frontend architecture
 
-Organize `src/features` by business domain, mirroring the backend module boundary.
+Organize `src/modules` by business domain, mirroring the backend module boundary.
 
-- Use `features/menu` for authenticated menu administration. Subdomains belong below it, for example `imports`, `categories`, `products`, and `modifier-groups`.
-- Use `features/public` for unauthenticated experiences. Public menu code belongs in `features/public/menu`.
+- Use `modules/menu` for authenticated menu administration. Subdomains belong below it, for example `imports`, `categories`, `products`, and `modifier-groups`.
+- Use `modules/public` for unauthenticated experiences. Public menu code belongs in `modules/public/menu`.
 - Keep `src/app` limited to route composition, layouts, providers, and route-level redirects. Do not put domain API clients, schemas, hooks, or view models there.
+- Use `components/ui` only for generic visual primitives. Shared authenticated shells, navigation, and other app structure belong in `components/layout`, not in a `modules/dashboard` domain.
 - Inside a domain, use only the folders the domain needs: `api`, `schemas`, `hooks`, `view-models`, `views`, and `components`.
 - File names, component names, functions, types, and variables must be in English. User-facing copy and URL segments may remain Portuguese when that is the product decision.
 - Do not split static headings, short text blocks, or one-off markup into components. Extract a component only for a reusable domain element, a self-contained interaction/state, or a substantial visual unit.

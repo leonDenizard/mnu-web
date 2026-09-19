@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-import { useAuthSessionStore } from '@/features/auth/store/auth-session.store'
+import { useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
 
 import { listOrders } from '../api/orders.api'
 

@@ -9,7 +9,8 @@ directory names a domain, not a UI technique or a single screen.
 src/
   app/                         # Routes, layouts, providers, redirects
   components/ui/               # Shared UI primitives
-  features/
+  components/layout/           # Shared app shell and navigation
+  modules/
     auth/
     dashboard/
     menu/
@@ -23,8 +24,8 @@ src/
     store/
 ```
 
-`features/menu` owns authenticated menu administration. `features/public` owns
-unauthenticated customer-facing flows. Do not create parallel feature roots such
+`modules/menu` owns authenticated menu administration. `modules/public` owns
+unauthenticated customer-facing flows. Do not create parallel module roots such
 as `menu-imports` or `public-menu`.
 
 ## Files within a domain
@@ -32,7 +33,7 @@ as `menu-imports` or `public-menu`.
 Use only folders justified by the domain:
 
 ```text
-features/menu/imports/
+modules/menu/imports/
   api/
   schemas/
   hooks/
@@ -50,6 +51,10 @@ features/menu/imports/
 
 `src/app` composes a route from a view. It must not own API calls, schemas, hooks,
 or business rules.
+
+`components/ui` contains generic visual primitives. Authenticated navigation and
+the application shell belong in `components/layout`; they are shared structure,
+not a `dashboard` business domain.
 
 ## Naming and component boundaries
 

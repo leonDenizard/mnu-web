@@ -30,3 +30,14 @@ export type ProductInput = {
   categoryId: string
   active?: boolean
 }
+
+export type ProductUpdateInput = {
+  name: string
+  price: number
+  categoryId: string
+  active: boolean
+  displayOrder: number
+  description?: string
+  image?: string
+  promotionalPrice?: number
+}
