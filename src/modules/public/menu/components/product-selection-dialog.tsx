@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 
 import type { PublicMenuOption, PublicMenuProduct } from '../schemas/public-menu.schema'
 
-export type CartSelection = { groupName: string; option: PublicMenuOption; quantity: number }
+export type CartSelection = { groupId: string; groupName: string; option: PublicMenuOption; quantity: number }
 
 type ProductSelectionDialogProps = { product: PublicMenuProduct; onClose: () => void; onAdd: (product: PublicMenuProduct, selections: CartSelection[], quantity: number) => void }
 
@@ -19,7 +19,7 @@ export function ProductSelectionDialog({ product, onClose, onAdd }: ProductSelec
   const [currentStep, setCurrentStep] = useState(0)
   const groups = product.modifierGroups
   const currentGroup = groups[currentStep]
-  const selected = useMemo(() => groups.flatMap((group) => group.options.filter((option) => (selectedOptions[group.id]?.[option.id] ?? 0) > 0).map((option) => ({ groupName: group.name, option, quantity: selectedOptions[group.id][option.id] }))), [groups, selectedOptions])
+  const selected = useMemo(() => groups.flatMap((group) => group.options.filter((option) => (selectedOptions[group.id]?.[option.id] ?? 0) > 0).map((option) => ({ groupId: group.id, groupName: group.name, option, quantity: selectedOptions[group.id][option.id] }))), [groups, selectedOptions])
   const total = ((product.promotionalPrice ?? product.price ?? 0) + selected.reduce((sum, item) => sum + item.option.price * item.quantity, 0)) * productQuantity
   const selectedCount = currentGroup ? Object.values(selectedOptions[currentGroup.id] ?? {}).reduce((sum, quantity) => sum + quantity, 0) : 0
   const canContinue = !currentGroup || (selectedCount >= currentGroup.minSelections && selectedCount <= currentGroup.maxSelections)

@@ -6,12 +6,14 @@ import { Bike, ChevronRight, MapPin, Store, UtensilsCrossed } from 'lucide-react
 import { useState } from 'react'
 
 import { ProductSelectionDialog, type CartSelection } from '../components/product-selection-dialog'
+import { PublicCheckout } from '../components/public-checkout'
 import { ShoppingCart, type CartItem } from '../components/shopping-cart'
 import type { PublicMenu, PublicMenuProduct } from '../schemas/public-menu.schema'
 
 export function PublicMenuView({ menu }: { menu: PublicMenu }) {
   const [selectedProduct, setSelectedProduct] = useState<PublicMenuProduct | null>(null)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
   const [activeCategoryId, setActiveCategoryId] = useState(menu.categories[0]?.id ?? null)
   const location = [menu.addressLine, menu.addressNumber, menu.neighborhood]
     .filter(Boolean)
@@ -113,7 +115,8 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
         )}
       </div>
       {selectedProduct && <ProductSelectionDialog product={selectedProduct} onClose={() => setSelectedProduct(null)} onAdd={addToCart} />}
-      <ShoppingCart items={cartItems} onChangeQuantity={changeQuantity} onRemove={(id) => setCartItems((items) => items.filter((item) => item.id !== id))} />
+      <ShoppingCart items={cartItems} onChangeQuantity={changeQuantity} onRemove={(id) => setCartItems((items) => items.filter((item) => item.id !== id))} onCheckout={() => setIsCheckoutOpen(true)} />
+      {isCheckoutOpen && <PublicCheckout slug={menu.slug} items={cartItems} supportsDelivery={menu.supportsDelivery} supportsPickup={menu.supportsPickup} supportsDineIn={menu.supportsDineIn} onClose={() => setIsCheckoutOpen(false)} onSuccess={() => { setCartItems([]); setIsCheckoutOpen(false) }} />}
     </main>
   )
 }
