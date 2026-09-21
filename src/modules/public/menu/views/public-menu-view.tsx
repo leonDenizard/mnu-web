@@ -1,10 +1,18 @@
+'use client'
+
 /* eslint-disable @next/next/no-img-element -- Menu images are external URLs configured by each store. */
 
 import { Bike, ChevronRight, MapPin, Store, UtensilsCrossed } from 'lucide-react'
+import { useState } from 'react'
 
-import type { PublicMenu } from '../schemas/public-menu.schema'
+import { ProductSelectionDialog, type CartSelection } from '../components/product-selection-dialog'
+import { ShoppingCart, type CartItem } from '../components/shopping-cart'
+import type { PublicMenu, PublicMenuProduct } from '../schemas/public-menu.schema'
 
 export function PublicMenuView({ menu }: { menu: PublicMenu }) {
+  const [selectedProduct, setSelectedProduct] = useState<PublicMenuProduct | null>(null)
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [activeCategoryId, setActiveCategoryId] = useState(menu.categories[0]?.id ?? null)
   const location = [menu.addressLine, menu.addressNumber, menu.neighborhood]
     .filter(Boolean)
     .join(', ')
@@ -14,8 +22,17 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
     menu.supportsDineIn && 'No local',
   ].filter((service): service is string => Boolean(service))
 
+  function addToCart(product: PublicMenuProduct, selections: CartSelection[], quantity: number) {
+    setCartItems((items) => [...items, { id: crypto.randomUUID(), product, selections, quantity }])
+    setSelectedProduct(null)
+  }
+
+  function changeQuantity(id: string, quantity: number) {
+    setCartItems((items) => quantity < 1 ? items.filter((item) => item.id !== id) : items.map((item) => item.id === id ? { ...item, quantity } : item))
+  }
+
   return (
-    <main className="min-h-screen bg-background pb-16 text-foreground">
+    <main className="min-h-screen bg-background pb-28 text-foreground">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-4 sm:px-6">
           <div className="flex items-center gap-2 text-sm font-semibold text-primary">
@@ -30,7 +47,7 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
       </header>
 
       <section className="border-b border-border bg-card">
-        <div className="mx-auto w-full max-w-3xl px-5 py-8 sm:px-6 sm:py-10">
+        <div className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-6 sm:py-10">
           <p className="text-sm font-medium text-primary">Cardápio digital</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{menu.name}</h1>
           {location && (
@@ -55,15 +72,13 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
       </section>
 
       {menu.categories.length > 0 && (
-        <nav
-          className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur"
-          aria-label="Categorias"
-        >
-          <div className="mx-auto flex w-full max-w-3xl gap-2 overflow-x-auto px-5 py-3 sm:px-6">
+        <nav className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur" aria-label="Categorias">
+          <div className="mx-auto flex w-full max-w-7xl gap-6 overflow-x-auto px-5 sm:px-6">
             {menu.categories.map((category) => (
               <a
-                className="shrink-0 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground hover:border-primary/40 hover:text-primary"
+                className={`shrink-0 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${activeCategoryId === category.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:border-primary/30 hover:text-foreground'}`}
                 href={`#${category.id}`}
+                onClick={() => setActiveCategoryId(category.id)}
                 key={category.id}
               >
                 {category.title}
@@ -73,22 +88,23 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
         </nav>
       )}
 
-      <div className="mx-auto w-full max-w-3xl px-5 pt-8 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-5 pt-8 sm:px-6">
         {menu.categories.length === 0 ? (
           <EmptyMenu />
         ) : (
           menu.categories.map((category) => (
             <section
-              className="mb-10 scroll-mt-20"
+              className="mb-12 scroll-mt-20"
               id={category.id}
               key={category.id}
             >
               <h2 className="text-xl font-semibold tracking-tight">{category.title}</h2>
-              <div className="mt-4 grid gap-3">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                 {category.products.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
+                    onSelect={() => setSelectedProduct(product)}
                   />
                 ))}
               </div>
@@ -96,19 +112,23 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
           ))
         )}
       </div>
+      {selectedProduct && <ProductSelectionDialog product={selectedProduct} onClose={() => setSelectedProduct(null)} onAdd={addToCart} />}
+      <ShoppingCart items={cartItems} onChangeQuantity={changeQuantity} onRemove={(id) => setCartItems((items) => items.filter((item) => item.id !== id))} />
     </main>
   )
 }
 
 function ProductCard({
   product,
+  onSelect,
 }: {
   product: PublicMenu['categories'][number]['products'][number]
+  onSelect: () => void
 }) {
   const currentPrice = product.promotionalPrice ?? product.price
 
   return (
-    <article className="flex gap-4 rounded-2xl border border-border bg-card p-3 shadow-sm">
+    <button className="flex w-full gap-4 rounded-2xl border border-border bg-card p-3 text-left shadow-sm transition-colors hover:border-primary/40" type="button" onClick={onSelect}>
       {product.image ? (
         <img
           alt=""
@@ -147,7 +167,7 @@ function ProductCard({
           </span>
         </div>
       </div>
-    </article>
+    </button>
   )
 }
 

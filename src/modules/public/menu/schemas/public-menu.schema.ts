@@ -57,3 +57,6 @@ export const publicMenuResponseSchema = z.object({
 })
 
 export type PublicMenu = z.infer<typeof publicMenuResponseSchema>['data']
+export type PublicMenuProduct = z.infer<typeof publicMenuProductSchema>
+export type PublicMenuModifierGroup = z.infer<typeof publicMenuModifierGroupSchema>
+export type PublicMenuOption = z.infer<typeof publicMenuOptionSchema>
