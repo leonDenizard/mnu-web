@@ -42,4 +42,5 @@ export const orderStateResponseSchema = z.object({
   }),
 })
 
+export type OrderStatus = z.infer<typeof orderStatusSchema>
 export type OrderSummary = z.infer<typeof ordersListResponseSchema>['data'][number]

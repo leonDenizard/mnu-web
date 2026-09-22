@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ChevronDown, ClipboardList, FileSpreadsheet, LogOut, Settings2, Store, UtensilsCrossed } from 'lucide-react'
+import { BarChart3, ChevronDown, ClipboardList, FileSpreadsheet, LogOut, Settings2, Store, UtensilsCrossed } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -19,13 +19,19 @@ const menuNavigation = [
   { href: '/cardapio/importacoes', label: 'Importar cardápio', icon: FileSpreadsheet },
 ]
 
+const reportsNavigation = [
+  { href: '/relatorios/pedidos', label: 'Relatório de pedidos', icon: ClipboardList },
+]
+
 export function AppNavigation() {
   const pathname = usePathname()
   const router = useRouter()
   const session = useAuthSessionStore((state) => state.session)
   const clearSession = useAuthSessionStore((state) => state.clearSession)
   const isMenuActive = pathname.startsWith('/cardapio')
+  const isReportsActive = pathname.startsWith('/relatorios')
   const [isMenuOpen, setIsMenuOpen] = useState(isMenuActive)
+  const [isReportsOpen, setIsReportsOpen] = useState(isReportsActive)
 
   function signOut() {
     clearSession()
@@ -117,6 +123,51 @@ export function AppNavigation() {
     </div>
   )
 
+  const renderReportsNavigation = (compact = false) => (
+    <div className={cn('grid gap-1', compact && 'col-span-3')}>
+      <button
+        aria-expanded={isReportsOpen || isReportsActive}
+        className={cn(
+          'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors',
+          isReportsActive
+            ? 'bg-primary/10 text-primary'
+            : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground',
+          compact && 'justify-center gap-1 px-2 py-2 text-xs',
+        )}
+        onClick={() => setIsReportsOpen((open) => !open)}
+        type="button"
+      >
+        <BarChart3 className="size-4" aria-hidden="true" />
+        Relatórios
+        <ChevronDown
+          className={cn('ml-auto size-4 transition-transform', (isReportsOpen || isReportsActive) && 'rotate-180')}
+          aria-hidden="true"
+        />
+      </button>
+      {(isReportsOpen || isReportsActive) && (
+        <div className={cn('ml-5 grid gap-1 border-l border-border pl-3', compact && 'ml-0 border-l-0 pl-0')}>
+          {reportsNavigation.map(({ href, label, icon: Icon }) => {
+            const active = pathname === href
+            return (
+              <Link
+                className={cn(
+                  'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
+                  active ? 'bg-primary/10 font-medium text-primary' : 'text-muted-foreground hover:bg-primary/5 hover:text-foreground',
+                  compact && 'justify-center px-2 text-xs',
+                )}
+                href={href}
+                key={href}
+              >
+                <Icon className="size-3.5 shrink-0" aria-hidden="true" />
+                <span className={cn(compact && 'sr-only')}>{label}</span>
+              </Link>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+
   return (
     <>
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-border bg-card p-4 md:flex">
@@ -136,6 +187,7 @@ export function AppNavigation() {
         >
           {renderLinks()}
           {renderMenuNavigation()}
+          {renderReportsNavigation()}
         </nav>
         <div className="mt-auto border-t border-border pt-4">
           <p className="truncate text-sm font-medium">{session?.user.storeName}</p>
@@ -177,6 +229,7 @@ export function AppNavigation() {
         >
           {renderLinks(true)}
           {renderMenuNavigation(true)}
+          {renderReportsNavigation(true)}
         </nav>
       </header>
     </>
