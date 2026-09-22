@@ -28,4 +28,18 @@ export const ordersListResponseSchema = z.object({
   meta: z.object({ total: z.number(), page: z.number(), lastPage: z.number() }),
 })
 
+export const orderStateResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    id: z.string(),
+    status: orderStatusSchema,
+    cancellationType: z.string().nullable(),
+    cancellationReason: z.string().nullable(),
+    acceptanceExpiresAt: z.string().nullable(),
+    canceledAt: z.string().nullable(),
+    version: z.number(),
+    updatedAt: z.string(),
+  }),
+})
+
 export type OrderSummary = z.infer<typeof ordersListResponseSchema>['data'][number]

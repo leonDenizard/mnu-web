@@ -1,19 +1,31 @@
 'use client'
 
 import { ClipboardList, LoaderCircle } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
+import { transitionOrder } from '../api/orders.api'
 import { OrderCard } from '../components/order-card'
+import { useOrderEvents } from '../hooks/use-order-events'
 import { useOrders } from '../hooks/use-orders'
 import type { OrderSummary } from '../schemas/orders.schema'
 
 const columns: Array<{ status: OrderSummary['status']; title: string }> = [
-  { status: 'PENDING', title: 'Novos pedidos' },
+  { status: 'PENDING', title: 'Aguardando aceite' },
   { status: 'IN_PREPARATION', title: 'Em preparo' },
   { status: 'READY', title: 'Prontos' },
 ]
 
 export function OrdersKanbanView() {
   const { data, isPending, isError } = useOrders()
+  const accessToken = useAuthSessionStore((state) => state.session?.accessToken)
+  const queryClient = useQueryClient()
+  const transitionMutation = useMutation({
+    mutationFn: ({ orderId, action }: { orderId: string; action: 'accept' | 'ready' | 'finish' }) =>
+      transitionOrder(orderId, action, accessToken!),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+  })
+  useOrderEvents()
   const orders = data?.data ?? []
 
   return (
@@ -51,7 +63,9 @@ export function OrdersKanbanView() {
                   {columnOrders.length > 0 ? (
                     columnOrders.map((order) => (
                       <OrderCard
+                        isTransitioning={transitionMutation.isPending && transitionMutation.variables?.orderId === order.id}
                         key={order.id}
+                        onTransition={(order, action) => transitionMutation.mutate({ orderId: order.id, action })}
                         order={order}
                       />
                     ))
