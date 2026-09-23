@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { isSessionExpired, useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
 
 import { AppNavigation } from './app-navigation'
+import { AppHeader } from './app-header'
 
 export function AuthenticatedShell({ children }: { children: ReactNode }) {
   const session = useAuthSessionStore((state) => state.session)
@@ -26,7 +27,10 @@ export function AuthenticatedShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <AppNavigation />
-      <div className="md:pl-64">{children}</div>
+      <div className="md:pl-64">
+        <AppHeader />
+        {children}
+      </div>
     </div>
   )
 }

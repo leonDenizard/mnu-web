@@ -4,7 +4,14 @@ import { ChevronLeft, ChevronRight, LoaderCircle } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 import { useOrderReport } from '../hooks/use-order-report'
 import type { OrderStatus } from '../schemas/orders.schema'
@@ -41,10 +48,15 @@ export function OrdersReportView() {
       <header>
         <p className="text-sm font-medium text-primary">Relatórios</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Relatório de pedidos</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Consulte os pedidos da sua loja por status.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Consulte os pedidos da sua loja por status.
+        </p>
       </header>
 
-      <div className="mt-8 flex flex-wrap gap-2" aria-label="Filtrar pedidos por status">
+      <div
+        className="mt-8 flex flex-wrap gap-2"
+        aria-label="Filtrar pedidos por status"
+      >
         {statusFilters.map((filter) => (
           <Button
             key={filter.label}
@@ -63,7 +75,9 @@ export function OrdersReportView() {
             <LoaderCircle className="size-4 animate-spin" /> Carregando pedidos…
           </div>
         ) : isError ? (
-          <p className="px-5 py-10 text-sm text-destructive">Não foi possível carregar o relatório.</p>
+          <p className="px-5 py-10 text-sm text-destructive">
+            Não foi possível carregar o relatório.
+          </p>
         ) : (
           <Table>
             <TableHeader>
@@ -84,18 +98,31 @@ export function OrdersReportView() {
                     <TableCell className="font-medium">#{order.orderNumber}</TableCell>
                     <TableCell>
                       <p>{order.customerName ?? 'Cliente não informado'}</p>
-                      <p className="text-xs text-muted-foreground">{order.itemCount} {order.itemCount === 1 ? 'item' : 'itens'}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {order.itemCount} {order.itemCount === 1 ? 'item' : 'itens'}
+                      </p>
                     </TableCell>
-                    <TableCell>{statusLabels[order.status]}</TableCell>
-                    <TableCell className="hidden sm:table-cell">{serviceTypeLabel(order.serviceType)}</TableCell>
-                    <TableCell className="hidden md:table-cell">{paymentMethodLabel(order.paymentMethod)}</TableCell>
-                    <TableCell className="hidden whitespace-nowrap lg:table-cell">{formatDate(order.createdAt)}</TableCell>
-                    <TableCell className="text-right font-medium text-primary">{formatCurrency(order.total)}</TableCell>
+                    <TableCell>{getStatusLabel(order.status, order.cancellationType)}</TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      {serviceTypeLabel(order.serviceType)}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {paymentMethodLabel(order.paymentMethod)}
+                    </TableCell>
+                    <TableCell className="hidden whitespace-nowrap lg:table-cell">
+                      {formatDate(order.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-primary">
+                      {formatCurrency(order.total)}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell className="h-36 text-center text-muted-foreground" colSpan={7}>
+                  <TableCell
+                    className="h-36 text-center text-muted-foreground"
+                    colSpan={7}
+                  >
                     Nenhum pedido encontrado com este filtro.
                   </TableCell>
                 </TableRow>
@@ -109,11 +136,23 @@ export function OrdersReportView() {
         <footer className="mt-4 flex items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">{data.meta.total} pedidos encontrados</p>
           <div className="flex items-center gap-2">
-            <Button disabled={page === 1} onClick={() => setPage((current) => current - 1)} size="sm" variant="outline">
+            <Button
+              disabled={page === 1}
+              onClick={() => setPage((current) => current - 1)}
+              size="sm"
+              variant="outline"
+            >
               <ChevronLeft /> Anterior
             </Button>
-            <span className="text-sm text-muted-foreground">Página {page} de {data.meta.lastPage}</span>
-            <Button disabled={page === data.meta.lastPage} onClick={() => setPage((current) => current + 1)} size="sm" variant="outline">
+            <span className="text-sm text-muted-foreground">
+              Página {page} de {data.meta.lastPage}
+            </span>
+            <Button
+              disabled={page === data.meta.lastPage}
+              onClick={() => setPage((current) => current + 1)}
+              size="sm"
+              variant="outline"
+            >
               Próxima <ChevronRight />
             </Button>
           </div>
@@ -128,7 +167,9 @@ function formatCurrency(value: number) {
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value))
+  return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(
+    new Date(value),
+  )
 }
 
 function serviceTypeLabel(value: 'DELIVERY' | 'PICKUP' | 'DINE_IN') {
@@ -137,4 +178,9 @@ function serviceTypeLabel(value: 'DELIVERY' | 'PICKUP' | 'DINE_IN') {
 
 function paymentMethodLabel(value: 'PIX' | 'CASH' | 'CARD' | 'OTHER') {
   return { PIX: 'Pix', CASH: 'Dinheiro', CARD: 'Cartão', OTHER: 'Outro' }[value]
+}
+
+function getStatusLabel(status: OrderStatus, cancellationType: string | null) {
+  if (status === 'CANCELED' && cancellationType === 'ACCEPTANCE_TIMEOUT') return 'Não aceito'
+  return statusLabels[status]
 }
