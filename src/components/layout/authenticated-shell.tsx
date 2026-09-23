@@ -27,7 +27,7 @@ export function AuthenticatedShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <AppNavigation />
-      <div className="md:pl-64">
+      <div className="md:pl-72">
         <AppHeader />
         {children}
       </div>
