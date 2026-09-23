@@ -1,8 +1,8 @@
 'use client'
 
-import { Clock3, LoaderCircle, Plus, Store, Trash2 } from 'lucide-react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
+import { LoaderCircle, Store } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type { FormEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,40 +11,14 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useAuthSessionStore } from '@/modules/auth/store/auth-session.store'
 
-import {
-  createOperatingHour,
-  deleteOperatingHour,
-  getOperatingHours,
-  setStoreOpen,
-  updateCurrentStore,
-} from '../api/store.api'
+import { setStoreOpen, updateCurrentStore } from '../api/store.api'
 import { useCurrentStore } from '../hooks/use-current-store'
-import type { OperatingWeekday } from '../schemas/store.schema'
-
-const weekdays: Array<{ value: OperatingWeekday; label: string }> = [
-  { value: 'MONDAY', label: 'Segunda-feira' },
-  { value: 'TUESDAY', label: 'Terça-feira' },
-  { value: 'WEDNESDAY', label: 'Quarta-feira' },
-  { value: 'THURSDAY', label: 'Quinta-feira' },
-  { value: 'FRIDAY', label: 'Sexta-feira' },
-  { value: 'SATURDAY', label: 'Sábado' },
-  { value: 'SUNDAY', label: 'Domingo' },
-]
 
 export function StoreView() {
   const accessToken = useAuthSessionStore((state) => state.session?.accessToken)
   const queryClient = useQueryClient()
   const storeQuery = useCurrentStore()
-  const hoursQuery = useQuery({
-    queryKey: ['store-operating-hours'],
-    queryFn: () => getOperatingHours(accessToken!),
-    enabled: Boolean(accessToken),
-  })
-  const [weekday, setWeekday] = useState<OperatingWeekday>('MONDAY')
-  const [openTime, setOpenTime] = useState('09:00')
-  const [closeTime, setCloseTime] = useState('18:00')
   const refreshStore = () => queryClient.invalidateQueries({ queryKey: ['current-store'] })
-  const refreshHours = () => queryClient.invalidateQueries({ queryKey: ['store-operating-hours'] })
   const updateMutation = useMutation({
     mutationFn: (input: Parameters<typeof updateCurrentStore>[0]) =>
       updateCurrentStore(input, accessToken!),
@@ -53,14 +27,6 @@ export function StoreView() {
   const openMutation = useMutation({
     mutationFn: (isOpen: boolean) => setStoreOpen(isOpen, accessToken!),
     onSuccess: refreshStore,
-  })
-  const addHourMutation = useMutation({
-    mutationFn: () => createOperatingHour({ weekday, openTime, closeTime }, accessToken!),
-    onSuccess: refreshHours,
-  })
-  const deleteHourMutation = useMutation({
-    mutationFn: (hourId: string) => deleteOperatingHour(hourId, accessToken!),
-    onSuccess: refreshHours,
   })
   const store = storeQuery.data?.data
 
@@ -303,85 +269,6 @@ export function StoreView() {
           </p>
         ) : null}
       </form>
-
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Horários de funcionamento</CardTitle>
-          <CardDescription>Cadastre um ou mais períodos para cada dia da semana.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form
-            className="grid gap-3 rounded-xl bg-muted/40 p-4 sm:grid-cols-[1fr_9rem_9rem_auto]"
-            onSubmit={(event) => {
-              event.preventDefault()
-              addHourMutation.mutate()
-            }}
-          >
-            <label className="grid gap-2 text-sm font-medium">
-              Dia da semana
-              <select
-                className="h-11 rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                onChange={(event) => setWeekday(event.target.value as OperatingWeekday)}
-                value={weekday}
-              >
-                {weekdays.map((day) => (
-                  <option
-                    key={day.value}
-                    value={day.value}
-                  >
-                    {day.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Field
-              label="Abre"
-              name="openTime"
-              onChange={(event) => setOpenTime(event.target.value)}
-              type="time"
-              value={openTime}
-            />
-            <Field
-              label="Fecha"
-              name="closeTime"
-              onChange={(event) => setCloseTime(event.target.value)}
-              type="time"
-              value={closeTime}
-            />
-            <Button
-              className="self-end"
-              disabled={addHourMutation.isPending || openTime >= closeTime}
-              type="submit"
-            >
-              {addHourMutation.isPending ? <LoaderCircle className="animate-spin" /> : <Plus />}{' '}
-              Adicionar
-            </Button>
-          </form>
-          {addHourMutation.isError ? (
-            <p className="mt-3 text-sm text-destructive">
-              Não foi possível adicionar este horário. Verifique se ele não se sobrepõe a outro
-              período.
-            </p>
-          ) : null}
-          {hoursQuery.isPending ? (
-            <p className="mt-5 text-sm text-muted-foreground">Carregando horários…</p>
-          ) : hoursQuery.isError ? (
-            <p className="mt-5 text-sm text-destructive">Não foi possível carregar os horários.</p>
-          ) : (
-            <div className="mt-5 grid gap-3 md:grid-cols-2">
-              {weekdays.map((day) => (
-                <OperatingDay
-                  key={day.value}
-                  label={day.label}
-                  hours={hoursQuery.data?.data[day.value] ?? []}
-                  isDeleting={deleteHourMutation.isPending}
-                  onDelete={(hourId) => deleteHourMutation.mutate(hourId)}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </main>
   )
 }
@@ -426,53 +313,6 @@ function ToggleRow({
         disabled={disabled}
         onCheckedChange={onChange}
       />
-    </div>
-  )
-}
-
-function OperatingDay({
-  label,
-  hours,
-  isDeleting,
-  onDelete,
-}: {
-  label: string
-  hours: Array<{ id: string; openTime: string; closeTime: string }>
-  isDeleting: boolean
-  onDelete: (id: string) => void
-}) {
-  return (
-    <div className="rounded-xl border border-border p-4">
-      <div className="flex items-center gap-2">
-        <Clock3 className="size-4 text-primary" />
-        <p className="font-medium">{label}</p>
-      </div>
-      {hours.length ? (
-        <div className="mt-3 grid gap-2">
-          {hours.map((hour) => (
-            <div
-              className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-sm"
-              key={hour.id}
-            >
-              <span>
-                {hour.openTime} — {hour.closeTime}
-              </span>
-              <Button
-                aria-label={`Remover horário de ${label}`}
-                disabled={isDeleting}
-                onClick={() => onDelete(hour.id)}
-                size="icon-xs"
-                type="button"
-                variant="ghost"
-              >
-                <Trash2 className="text-destructive" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-3 text-sm text-muted-foreground">Fechado</p>
-      )}
     </div>
   )
 }

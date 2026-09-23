@@ -1,11 +1,15 @@
 import { apiRequest } from '@/lib/api-client'
+import { z } from 'zod'
 
 import {
   currentStoreResponseSchema,
   operatingHourResponseSchema,
   operatingHoursResponseSchema,
   type OperatingWeekday,
+  type StoreAvailabilityMode,
 } from '../schemas/store.schema'
+
+const successSchema = z.object({ success: z.literal(true) })
 
 type UpdateStoreInput = Partial<{
   name: string
@@ -69,4 +73,33 @@ export function deleteOperatingHour(hourId: string, accessToken: string) {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${accessToken}` },
   })
+}
+
+export function updateStoreAvailability(
+  input: {
+    mode: StoreAvailabilityMode
+    operatingHours: Array<{ weekday: OperatingWeekday; openTime: string; closeTime: string }>
+  },
+  accessToken: string,
+) {
+  return apiRequest('/api/stores/me/availability', successSchema, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(input),
+  })
+}
+
+export function createUnavailabilityPeriod(
+  input: { startsAt: string; endsAt: string; reason?: string },
+  accessToken: string,
+) {
+  return apiRequest(
+    '/api/stores/me/unavailability-periods',
+    z.object({ success: z.literal(true) }),
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify(input),
+    },
+  )
 }

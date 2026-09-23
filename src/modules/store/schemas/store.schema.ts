@@ -6,6 +6,12 @@ export const currentStoreResponseSchema = z.object({
     name: z.string(),
     slug: z.string(),
     isOpen: z.boolean(),
+    availabilityMode: z.enum([
+      'ALWAYS_AVAILABLE',
+      'SCHEDULED',
+      'SCHEDULED_ONLY',
+      'PERMANENTLY_CLOSED',
+    ]),
     legalName: z.string().optional().nullable(),
     phone: z.string().optional().nullable(),
     whatsapp: z.string().nullable(),
@@ -49,3 +55,6 @@ export const operatingHourResponseSchema = z.object({
 
 export type CurrentStore = z.infer<typeof currentStoreResponseSchema>['data']
 export type OperatingWeekday = keyof z.infer<typeof operatingHoursResponseSchema>['data']
+export type StoreAvailabilityMode = z.infer<
+  typeof currentStoreResponseSchema
+>['data']['availabilityMode']

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import {
   BarChart3,
+  Clock3,
   ChevronDown,
   ClipboardList,
   FileSpreadsheet,
@@ -26,7 +27,11 @@ type NavigationItem = {
 
 const mainNavigation: NavigationItem[] = [
   { href: '/kanban', label: 'Pedidos', icon: ClipboardList },
-  { href: '/loja', label: 'Loja', icon: Store },
+]
+
+const storeNavigation: NavigationItem[] = [
+  { href: '/loja', label: 'Configurações', icon: Settings2 },
+  { href: '/loja/horarios', label: 'Horários', icon: Clock3 },
 ]
 
 const menuNavigation: NavigationItem[] = [
@@ -45,8 +50,10 @@ export function AppNavigation() {
   const clearSession = useAuthSessionStore((state) => state.clearSession)
   const isMenuActive = pathname.startsWith('/cardapio')
   const isReportsActive = pathname.startsWith('/relatorios')
+  const isStoreActive = pathname === '/loja' || pathname.startsWith('/loja/')
   const [isMenuOpen, setIsMenuOpen] = useState(isMenuActive)
   const [isReportsOpen, setIsReportsOpen] = useState(isReportsActive)
+  const [isStoreOpen, setIsStoreOpen] = useState(isStoreActive)
 
   function signOut() {
     clearSession()
@@ -80,6 +87,15 @@ export function AppNavigation() {
               key={item.href}
             />
           ))}
+          <NavigationGroup
+            active={isStoreActive}
+            icon={Store}
+            isOpen={isStoreOpen}
+            items={storeNavigation}
+            label="Loja"
+            onToggle={() => setIsStoreOpen((open) => !open)}
+            pathname={pathname}
+          />
           <NavigationGroup
             active={isMenuActive}
             isOpen={isMenuOpen}
@@ -139,20 +155,22 @@ export function AppNavigation() {
           className="mt-4 flex gap-1 overflow-x-auto pb-1"
           aria-label="Navegação principal"
         >
-          {[...mainNavigation, ...menuNavigation, ...reportsNavigation].map((item) => (
-            <Link
-              className={cn(
-                'flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium',
-                isActive(pathname, item.href)
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground',
-              )}
-              href={item.href}
-              key={item.href}
-            >
-              <item.icon className="size-3.5" /> {item.label}
-            </Link>
-          ))}
+          {[...mainNavigation, ...storeNavigation, ...menuNavigation, ...reportsNavigation].map(
+            (item) => (
+              <Link
+                className={cn(
+                  'flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium',
+                  isActive(pathname, item.href)
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground',
+                )}
+                href={item.href}
+                key={item.href}
+              >
+                <item.icon className="size-3.5" /> {item.label}
+              </Link>
+            ),
+          )}
         </nav>
       </header>
     </>
