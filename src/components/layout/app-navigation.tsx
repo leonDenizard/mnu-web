@@ -270,5 +270,6 @@ function NavigationGroup({
 }
 
 function isActive(pathname: string, href: string) {
+  if (href === '/loja') return pathname === href
   return pathname === href || pathname.startsWith(`${href}/`)
 }

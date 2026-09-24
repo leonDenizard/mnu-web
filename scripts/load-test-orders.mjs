@@ -77,7 +77,9 @@ console.table({
 
 if (rejected.length > 0) {
   console.error(
-    rejected.slice(0, 5).map((result) => (result.status === 'rejected' ? result.reason.message : null)),
+    rejected
+      .slice(0, 5)
+      .map((result) => (result.status === 'rejected' ? result.reason.message : null)),
   )
   process.exitCode = 1
 }

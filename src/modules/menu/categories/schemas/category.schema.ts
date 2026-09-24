@@ -21,4 +21,7 @@ export const categoriesResponseSchema = z.object({
 export const categoryResponseSchema = z.object({ success: z.literal(true), data: categorySchema })
 
 export type Category = z.infer<typeof categorySchema>
-export type CategoryInput = Pick<Category, 'title' | 'active' | 'displayOrder' | 'showInMenu' | 'showInPos' | 'showInWaiter'>
+export type CategoryInput = Pick<
+  Category,
+  'title' | 'active' | 'displayOrder' | 'showInMenu' | 'showInPos' | 'showInWaiter'
+>
