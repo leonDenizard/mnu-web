@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist_Mono, Montserrat } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
@@ -16,6 +16,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'MNU',
   description: 'Gestão simples para cardápio e pedidos.',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  interactiveWidget: 'overlays-content',
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

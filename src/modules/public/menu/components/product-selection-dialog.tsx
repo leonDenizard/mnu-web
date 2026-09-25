@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- Menu images are external URLs configured by each store. */
 
 import { ChevronLeft, ChevronRight, Minus, Plus, Store, X } from 'lucide-react'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
 
@@ -36,6 +36,7 @@ export function ProductSelectionDialog({
   )
   const [productQuantity, setProductQuantity] = useState(initialQuantity)
   const [currentStep, setCurrentStep] = useState(0)
+  const [isGroupDetailsCollapsed, setIsGroupDetailsCollapsed] = useState(false)
   const groups = product.modifierGroups
   const currentGroup = groups[currentStep]
   const selected = useMemo(
@@ -81,6 +82,7 @@ export function ProductSelectionDialog({
   function continueSelection() {
     if (!canContinue) return
     if (currentStep === groups.length - 1) return onAdd(product, selected, productQuantity)
+    setIsGroupDetailsCollapsed(false)
     setCurrentStep((step) => step + 1)
   }
 
@@ -109,39 +111,56 @@ export function ProductSelectionDialog({
       onClose={onClose}
     >
       <div className="min-h-0 flex flex-1 flex-col">
-        <div className="shrink-0 border-b border-border bg-card">
+        <div className="shrink-0">
           <div className="mx-auto w-full max-w-2xl px-5 py-5 sm:px-6">
             <div
               className="flex gap-2"
               aria-label={`Etapa ${currentStep + 1} de ${groups.length}`}
             >
-              {groups.map((group, index) => (
-                <span
-                  className={`h-1.5 flex-1 rounded-full transition-colors ${index <= currentStep ? 'bg-primary' : 'bg-muted'}`}
-                  key={group.id}
-                />
-              ))}
+              {groups.map((group) => {
+                const groupSelectedCount = Object.values(selectedOptions[group.id] ?? {}).reduce(
+                  (sum, quantity) => sum + quantity,
+                  0,
+                )
+
+                return (
+                  <span
+                    className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted-foreground/20"
+                    key={group.id}
+                  >
+                    <span
+                      className="block h-full origin-left rounded-full bg-primary transition-transform duration-200"
+                      style={{
+                        transform: `scaleX(${getGroupProgress(groupSelectedCount, group.maxSelections)})`,
+                      }}
+                    />
+                  </span>
+                )
+              })}
             </div>
-            <div className="mt-5">
-              <p className="text-sm font-medium text-primary">
-                Etapa {currentStep + 1} de {groups.length}
-              </p>
-              <div className="mt-2 flex items-start justify-between gap-4">
+            <div
+              className={`overflow-hidden transition-[max-height,margin,opacity] duration-200 sm:mt-5 sm:max-h-none sm:opacity-100 ${isGroupDetailsCollapsed ? 'max-h-0 opacity-0' : 'mt-4 max-h-40 opacity-100'}`}
+            >
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-semibold tracking-tight">{currentGroup.name}</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {currentGroup.required ? 'Escolha obrigatória' : 'Escolha opcional'} · selecione
-                    de {currentGroup.minSelections} a {currentGroup.maxSelections} opção(ões).
+                  <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+                    {currentGroup.name}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {currentGroup.required ? 'Obrigatória' : 'Opcional'}
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
+                <span className="shrink-0 font-semibold folrounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                   {selectedCount}/{currentGroup.maxSelections}
                 </span>
               </div>
             </div>
           </div>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          onScroll={(event) => setIsGroupDetailsCollapsed(event.currentTarget.scrollTop > 16)}
+        >
           <div className="mx-auto w-full max-w-2xl px-5 py-5 sm:px-6">
             <div className="grid gap-3 pb-4">
               {currentGroup.options.map((option) => {
@@ -160,16 +179,16 @@ export function ProductSelectionDialog({
                         alt=""
                       />
                     ) : (
-                      <div className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-primary">
-                        <Store className="size-5" />
+                      <div >
+                       
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium">{option.name}</p>
+                      <p className="font-medium text-sm">{option.name}</p>
                       {option.description && (
-                        <p className="mt-1 text-sm text-muted-foreground">{option.description}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{option.description}</p>
                       )}
-                      <p className="mt-1 text-sm text-primary">
+                      <p className="mt-1 text-xs text-primary">
                         {option.price > 0 ? `+ ${formatPrice(option.price)}` : 'Incluso'}
                       </p>
                     </div>
@@ -191,7 +210,14 @@ export function ProductSelectionDialog({
         onQuantityChange={setProductQuantity}
         actionLabel={currentStep === groups.length - 1 ? 'Adicionar ao carrinho' : 'Próxima etapa'}
         disabled={!canContinue}
-        onBack={currentStep > 0 ? () => setCurrentStep((step) => step - 1) : undefined}
+        onBack={
+          currentStep > 0
+            ? () => {
+                setIsGroupDetailsCollapsed(false)
+                setCurrentStep((step) => step - 1)
+              }
+            : undefined
+        }
         onAction={continueSelection}
       />
     </ProductSetupScreen>
@@ -207,32 +233,44 @@ function ProductSetupScreen({
   onClose: () => void
   children: ReactNode
 }) {
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow
+    const previousDocumentOverscroll = document.documentElement.style.overscrollBehavior
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overscrollBehavior = 'none'
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow
+      document.documentElement.style.overscrollBehavior = previousDocumentOverscroll
+    }
+  }, [])
+
   return (
     <div
-      className="fixed inset-0 z-50 flex min-h-0 flex-col overflow-hidden bg-background"
+      className="fixed inset-0 z-50 flex min-h-0 flex-col overflow-hidden overscroll-none bg-background"
       role="presentation"
     >
       <header className="shrink-0 border-b border-border bg-card">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4 px-5 py-4 sm:px-6">
+        <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4 px-5 py-3 sm:px-6 sm:py-4">
           <div className="flex min-w-0 items-center gap-4">
             {product.image ? (
               <img
-                className="size-24 shrink-0 rounded-xl object-cover"
+                className="size-16 shrink-0 rounded-xl object-cover sm:size-24"
                 src={product.image}
                 alt=""
               />
             ) : (
-              <div className="flex size-24 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-primary">
-                <Store className="size-7" />
+              <div className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-primary sm:size-24">
+                <Store className="size-5 sm:size-7" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="truncate text-lg font-semibold">{product.name}</p>
-              <p className="mt-1 text-sm text-muted-foreground">Personalize seu pedido</p>
+              <p className="truncate text-base font-semibold sm:text-lg">{product.name}</p>
+              <p className="text-sm text-muted-foreground">Personalize seu pedido</p>
             </div>
           </div>
           <Button
-            size="icon-sm"
+            size="icon-lg"
             variant="ghost"
             onClick={onClose}
             aria-label="Fechar"
@@ -264,7 +302,7 @@ function CheckoutBar({
   onAction: () => void
 }) {
   return (
-    <div className="shrink-0 border-t border-border bg-card p-4">
+    <div className="shrink-0 border-t border-border bg-card px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
       <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-2 sm:gap-4">
         {onBack ? (
           <Button
@@ -294,7 +332,7 @@ function CheckoutBar({
         >
           <span className="hidden sm:inline">{actionLabel}</span>
           <span className="sr-only sm:hidden">{actionLabel}</span>
-          {actionLabel === 'Próxima etapa' ? <ChevronRight /> : <Plus />}
+          {actionLabel === 'Próxima etapa' ? <ChevronRight /> : <Plus/>}
         </Button>
       </div>
     </div>
@@ -311,6 +349,11 @@ function createSelectedOptions(selections: CartSelection[]) {
   }, {})
 }
 
+function getGroupProgress(selectedCount: number, maxSelections: number) {
+  if (maxSelections === 0) return 0
+  return Math.min(selectedCount / maxSelections, 1)
+}
+
 function QuantityControl({
   quantity,
   canAdd,
@@ -321,9 +364,9 @@ function QuantityControl({
   onChange: (delta: number) => void
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-1">
       <Button
-        size="icon"
+        size="icon-xs"
         variant="outline"
         disabled={quantity === 0}
         onClick={() => onChange(-1)}
@@ -333,7 +376,7 @@ function QuantityControl({
       </Button>
       <span className="w-6 text-center text-base font-medium">{quantity}</span>
       <Button
-        size="icon"
+        size="icon-xs"
         variant="outline"
         disabled={!canAdd}
         onClick={() => onChange(1)}

@@ -93,114 +93,116 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
 
   return (
     <main className="min-h-screen bg-background pb-28 text-foreground">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-4 sm:px-6">
-          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-            <UtensilsCrossed className="size-4" /> mnu
-          </div>
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${isStoreOpen ? 'bg-emerald-50 text-emerald-700' : 'border border-border bg-card text-muted-foreground'}`}
-          >
-            {isStoreOpen ? 'Aberto agora' : 'Fechado agora'}
-          </span>
-        </div>
-      </header>
-
-      <section className="border-b border-border bg-card">
-        <div className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-6 sm:py-10">
-          <p className="text-sm font-medium text-primary">Cardápio digital</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{menu.name}</h1>
-          {location && (
-            <p className="mt-3 flex items-center gap-2 text-sm text-stone-600">
-              <MapPin className="size-4 shrink-0" />
-              {location}
-            </p>
-          )}
-          {availableServices.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {availableServices.map((service) => (
-                <span
-                  className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground"
-                  key={service}
-                >
-                  {service}
-                </span>
-              ))}
+      <div aria-hidden={isCheckoutOpen}>
+        <header className="border-b border-border bg-card">
+          <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-5 py-4 sm:px-6">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+              <UtensilsCrossed className="size-4" /> mnu
             </div>
-          )}
-        </div>
-      </section>
-
-      {menu.categories.length > 0 && (
-        <nav
-          className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur"
-          aria-label="Categorias"
-        >
-          <div className="mx-auto flex w-full max-w-7xl gap-6 overflow-x-auto px-5 sm:px-6">
-            {menu.categories.map((category) => (
-              <a
-                className={`shrink-0 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${activeCategoryId === category.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:border-primary/30 hover:text-foreground'}`}
-                href={`#${category.id}`}
-                onClick={() => setActiveCategoryId(category.id)}
-                key={category.id}
-              >
-                {category.title}
-              </a>
-            ))}
-          </div>
-        </nav>
-      )}
-
-      <div className="mx-auto w-full max-w-7xl px-5 pt-8 sm:px-6">
-        {menu.categories.length === 0 ? (
-          <EmptyMenu />
-        ) : (
-          menu.categories.map((category) => (
-            <section
-              className="mb-12 scroll-mt-20"
-              id={category.id}
-              key={category.id}
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${isStoreOpen ? 'bg-emerald-50 text-emerald-700' : 'border border-border bg-card text-muted-foreground'}`}
             >
-              <h2 className="text-xl font-semibold tracking-tight">{category.title}</h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {category.products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    isStoreOpen={isStoreOpen}
-                    onSelect={() => setSelectedProduct(product)}
-                  />
+              {isStoreOpen ? 'Aberto agora' : 'Fechado agora'}
+            </span>
+          </div>
+        </header>
+
+        <section className="border-b border-border bg-card">
+          <div className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-6 sm:py-10">
+            <p className="text-sm font-medium text-primary">Cardápio digital</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{menu.name}</h1>
+            {location && (
+              <p className="mt-3 flex items-center gap-2 text-sm text-stone-600">
+                <MapPin className="size-4 shrink-0" />
+                {location}
+              </p>
+            )}
+            {availableServices.length > 0 && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {availableServices.map((service) => (
+                  <span
+                    className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground"
+                    key={service}
+                  >
+                    {service}
+                  </span>
                 ))}
               </div>
-            </section>
-          ))
+            )}
+          </div>
+        </section>
+
+        {menu.categories.length > 0 && (
+          <nav
+            className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur"
+            aria-label="Categorias"
+          >
+            <div className="mx-auto flex w-full max-w-7xl gap-6 overflow-x-auto px-5 sm:px-6">
+              {menu.categories.map((category) => (
+                <a
+                  className={`shrink-0 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${activeCategoryId === category.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:border-primary/30 hover:text-foreground'}`}
+                  href={`#${category.id}`}
+                  onClick={() => setActiveCategoryId(category.id)}
+                  key={category.id}
+                >
+                  {category.title}
+                </a>
+              ))}
+            </div>
+          </nav>
         )}
-      </div>
-      {selectedProduct && isStoreOpen && (
-        <ProductSelectionDialog
-          key={editingItem?.id ?? selectedProduct.id}
-          product={selectedProduct}
-          initialSelections={editingItem?.selections}
-          initialQuantity={editingItem?.quantity}
-          onClose={() => {
-            setSelectedProduct(null)
-            setEditingItem(null)
+
+        <div className="mx-auto w-full max-w-7xl px-5 pt-8 sm:px-6">
+          {menu.categories.length === 0 ? (
+            <EmptyMenu />
+          ) : (
+            menu.categories.map((category) => (
+              <section
+                className="mb-12 scroll-mt-20"
+                id={category.id}
+                key={category.id}
+              >
+                <h2 className="text-xl font-semibold tracking-tight">{category.title}</h2>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {category.products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      isStoreOpen={isStoreOpen}
+                      onSelect={() => setSelectedProduct(product)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))
+          )}
+        </div>
+        {selectedProduct && isStoreOpen && (
+          <ProductSelectionDialog
+            key={editingItem?.id ?? selectedProduct.id}
+            product={selectedProduct}
+            initialSelections={editingItem?.selections}
+            initialQuantity={editingItem?.quantity}
+            onClose={() => {
+              setSelectedProduct(null)
+              setEditingItem(null)
+            }}
+            onAdd={addToCart}
+          />
+        )}
+        <ShoppingCart
+          isStoreOpen={isStoreOpen}
+          items={cartItems}
+          pulse={isCartHighlighted}
+          onChangeQuantity={changeQuantity}
+          onEdit={(item) => {
+            setEditingItem(item)
+            setSelectedProduct(item.product)
           }}
-          onAdd={addToCart}
+          onRemove={(id) => setCartItems((items) => items.filter((item) => item.id !== id))}
+          onCheckout={() => setIsCheckoutOpen(true)}
         />
-      )}
-      <ShoppingCart
-        isStoreOpen={isStoreOpen}
-        items={cartItems}
-        pulse={isCartHighlighted}
-        onChangeQuantity={changeQuantity}
-        onEdit={(item) => {
-          setEditingItem(item)
-          setSelectedProduct(item.product)
-        }}
-        onRemove={(id) => setCartItems((items) => items.filter((item) => item.id !== id))}
-        onCheckout={() => setIsCheckoutOpen(true)}
-      />
+      </div>
       {isCheckoutOpen && (
         <PublicCheckout
           isStoreOpen={isStoreOpen}
@@ -210,10 +212,8 @@ export function PublicMenuView({ menu }: { menu: PublicMenu }) {
           supportsPickup={menu.supportsPickup}
           supportsDineIn={menu.supportsDineIn}
           onClose={() => setIsCheckoutOpen(false)}
-          onSuccess={() => {
-            setCartItems([])
-            setIsCheckoutOpen(false)
-          }}
+          onOrderCreated={() => setCartItems([])}
+          onSuccess={() => setIsCheckoutOpen(false)}
         />
       )}
     </main>
